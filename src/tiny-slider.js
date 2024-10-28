@@ -108,7 +108,8 @@ export var tns = function(options) {
     freezable: true,
     onInit: false,
     useLocalStorage: true,
-    nonce: false
+    nonce: false,
+    ariaLive: false
   }, options || {});
 
   var doc = document,
@@ -1005,8 +1006,10 @@ export var tns = function(options) {
     updateSlideStatus();
 
     // == live region ==
-    outerWrapper.insertAdjacentHTML('afterbegin', '<div class="tns-liveregion tns-visually-hidden" aria-live="polite" aria-atomic="true">slide <span class="current">' + getLiveRegionStr() + '</span>  of ' + slideCount + '</div>');
-    liveregionCurrent = outerWrapper.querySelector('.tns-liveregion .current');
+    if (options.ariaLive) {
+      outerWrapper.insertAdjacentHTML('afterbegin', '<div class="tns-liveregion tns-visually-hidden" aria-live="polite" aria-atomic="true">slide <span class="current">' + getLiveRegionStr() + '</span>  of ' + slideCount + '</div>');
+      liveregionCurrent = outerWrapper.querySelector('.tns-liveregion .current');
+    }
 
     // == autoplayInit ==
     if (hasAutoplay) {
