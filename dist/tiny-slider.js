@@ -514,6 +514,7 @@ var tns = function(options) {
     prevButton: false,
     nextButton: false,
     nav: true,
+    navText: ['Carousel Page ', ' (Current Slide)'],
     navPosition: 'top',
     navContainer: false,
     navAsThumbnails: false,
@@ -547,7 +548,8 @@ var tns = function(options) {
     freezable: true,
     onInit: false,
     useLocalStorage: true,
-    nonce: false
+    nonce: false,
+    ariaLive: false
   }, options || {});
 
   var doc = document,
@@ -718,6 +720,7 @@ var tns = function(options) {
       controls = getOption('controls'),
       controlsText = getOption('controlsText'),
       nav = getOption('nav'),
+      navText = getOption('navText'),
       touch = getOption('touch'),
       mouseDrag = getOption('mouseDrag'),
       autoplay = getOption('autoplay'),
@@ -845,8 +848,8 @@ var tns = function(options) {
         navCurrentIndex = getCurrentNavIndex(),
         navCurrentIndexCached = navCurrentIndex,
         navActiveClass = 'tns-nav-active',
-        navStr = 'Carousel Page ',
-        navStrCurrent = ' (Current Slide)';
+        navStr = navText[0],
+        navStrCurrent = navText[1];
   }
 
   // autoplay
@@ -985,7 +988,7 @@ var tns = function(options) {
     rect = div.getBoundingClientRect();
     width = rect.right - rect.left;
     div.remove();
-    return width || getClientWidth(el.parentNode);
+    return width || (el.parentNode.parentNode && getClientWidth(el.parentNode)) || null;
   }
 
   function getViewportWidth () {
@@ -1444,8 +1447,10 @@ var tns = function(options) {
     updateSlideStatus();
 
     // == live region ==
-    outerWrapper.insertAdjacentHTML('afterbegin', '<div class="tns-liveregion tns-visually-hidden" aria-live="polite" aria-atomic="true">slide <span class="current">' + getLiveRegionStr() + '</span>  of ' + slideCount + '</div>');
-    liveregionCurrent = outerWrapper.querySelector('.tns-liveregion .current');
+    if (options.ariaLive) {
+      outerWrapper.insertAdjacentHTML('afterbegin', '<div class="tns-liveregion tns-visually-hidden" aria-live="polite" aria-atomic="true">slide <span class="current">' + getLiveRegionStr() + '</span>  of ' + slideCount + '</div>');
+      liveregionCurrent = outerWrapper.querySelector('.tns-liveregion .current');
+    }
 
     // == autoplayInit ==
     if (hasAutoplay) {
@@ -1480,7 +1485,6 @@ var tns = function(options) {
         forEach(navItems, function(item, i) {
           setAttrs(item, {
             'data-nav': i,
-            'tabindex': '-1',
             'aria-label': navStr + (i + 1),
             'aria-controls': slideId,
           });
@@ -1492,7 +1496,7 @@ var tns = function(options) {
             hiddenStr = navAsThumbnails ? '' : 'style="display:none"';
         for (var i = 0; i < slideCount; i++) {
           // hide nav items by default
-          navHtml += '<button type="button" data-nav="' + i +'" tabindex="-1" aria-controls="' + slideId + '" ' + hiddenStr + ' aria-label="' + navStr + (i + 1) +'"></button>';
+          navHtml += '<button type="button" data-nav="' + i +'" aria-controls="' + slideId + '" ' + hiddenStr + ' aria-label="' + navStr + (i + 1) +'"></button>';
         }
         navHtml = '<div class="tns-nav" aria-label="Carousel Pagination">' + navHtml + '</div>';
         outerWrapper.insertAdjacentHTML(getInsertPosition(options.navPosition), navHtml);
@@ -1515,8 +1519,10 @@ var tns = function(options) {
         addCSSRule(sheet, '[aria-controls^=' + slideId + '-item]', str, getCssRulesLength(sheet));
       }
 
-      setAttrs(navItems[navCurrentIndex], {'aria-label': navStr + (navCurrentIndex + 1) + navStrCurrent});
-      removeAttrs(navItems[navCurrentIndex], 'tabindex');
+      setAttrs(navItems[navCurrentIndex], {
+        'aria-label': navStr + (navCurrentIndex + 1) + navStrCurrent,
+        'aria-current': 'true'
+      });
       addClass(navItems[navCurrentIndex], navActiveClass);
 
       // add events
@@ -1528,7 +1534,7 @@ var tns = function(options) {
     // == controlsInit ==
     if (hasControls) {
       if (!controlsContainer && (!prevButton || !nextButton)) {
-        outerWrapper.insertAdjacentHTML(getInsertPosition(options.controlsPosition), '<div class="tns-controls" aria-label="Carousel Navigation" tabindex="0"><button type="button" data-controls="prev" tabindex="-1" aria-controls="' + slideId +'">' + controlsText[0] + '</button><button type="button" data-controls="next" tabindex="-1" aria-controls="' + slideId +'">' + controlsText[1] + '</button></div>');
+        outerWrapper.insertAdjacentHTML(getInsertPosition(options.controlsPosition), '<div class="tns-controls" aria-label="Carousel Navigation" tabindex="0"><button type="button" data-controls="prev" aria-controls="' + slideId +'">' + controlsText[0] + '</button><button type="button" data-controls="next" aria-controls="' + slideId +'">' + controlsText[1] + '</button></div>');
 
         controlsContainer = outerWrapper.querySelector('.tns-controls');
       }
@@ -1548,7 +1554,6 @@ var tns = function(options) {
       if (options.controlsContainer || (options.prevButton && options.nextButton)) {
         setAttrs([prevButton, nextButton], {
           'aria-controls': slideId,
-          'tabindex': '-1',
         });
       }
 
@@ -1655,9 +1660,9 @@ var tns = function(options) {
 
 
     // reset variables
-    tnsList = animateIn = animateOut = animateDelay = animateNormal = horizontal = outerWrapper = innerWrapper = container = containerParent = containerHTML = slideItems = slideCount = breakpointZone = windowWidth = autoWidth = fixedWidth = edgePadding = gutter = viewport = items = slideBy = viewportMax = arrowKeys = speed = rewind = loop = autoHeight = sheet = lazyload = slidePositions = slideItemsOut = cloneCount = slideCountNew = hasRightDeadZone = rightBoundary = updateIndexBeforeTransform = transformAttr = transformPrefix = transformPostfix = getIndexMax = index = indexCached = indexMin = indexMax = resizeTimer = swipeAngle = moveDirectionExpected = running = onInit = events = newContainerClasses = slideId = disable = disabled = freezable = freeze = frozen = controlsEvents = navEvents = hoverEvents = visibilityEvent = docmentKeydownEvent = touchEvents = dragEvents = hasControls = hasNav = navAsThumbnails = hasAutoplay = hasTouch = hasMouseDrag = slideActiveClass = imgCompleteClass = imgEvents = imgsComplete = controls = controlsText = controlsContainer = controlsContainerHTML = prevButton = nextButton = prevIsButton = nextIsButton = nav = navContainer = navContainerHTML = navItems = pages = pagesCached = navClicked = navCurrentIndex = navCurrentIndexCached = navActiveClass = navStr = navStrCurrent = autoplay = autoplayTimeout = autoplayDirection = autoplayText = autoplayHoverPause = autoplayButton = autoplayButtonHTML = autoplayResetOnVisibility = autoplayHtmlStrings = autoplayTimer = animating = autoplayHoverPaused = autoplayUserPaused = autoplayVisibilityPaused = initPosition = lastPosition = translateInit = disX = disY = panStart = rafIndex = getDist = touch = mouseDrag = null;
+    tnsList = animateIn = animateOut = animateDelay = animateNormal = horizontal = outerWrapper = innerWrapper = container = containerParent = containerHTML = slideItems = slideCount = breakpointZone = windowWidth = autoWidth = fixedWidth = edgePadding = gutter = viewport = items = slideBy = viewportMax = arrowKeys = speed = rewind = loop = autoHeight = sheet = lazyload = slidePositions = slideItemsOut = cloneCount = slideCountNew = hasRightDeadZone = rightBoundary = updateIndexBeforeTransform = transformAttr = transformPrefix = transformPostfix = getIndexMax = index = indexCached = indexMin = indexMax = resizeTimer = swipeAngle = moveDirectionExpected = running = onInit = events = newContainerClasses = slideId = disable = disabled = freezable = freeze = frozen = controlsEvents = navEvents = hoverEvents = visibilityEvent = docmentKeydownEvent = touchEvents = dragEvents = hasControls = hasNav = navAsThumbnails = hasAutoplay = hasTouch = hasMouseDrag = slideActiveClass = imgCompleteClass = imgEvents = imgsComplete = controls = controlsText = navText = controlsContainer = controlsContainerHTML = prevButton = nextButton = prevIsButton = nextIsButton = nav = navContainer = navContainerHTML = navItems = pages = pagesCached = navClicked = navCurrentIndex = navCurrentIndexCached = navActiveClass = navStr = navStrCurrent = autoplay = autoplayTimeout = autoplayDirection = autoplayText = autoplayHoverPause = autoplayButton = autoplayButtonHTML = autoplayResetOnVisibility = autoplayHtmlStrings = autoplayTimer = animating = autoplayHoverPaused = autoplayUserPaused = autoplayVisibilityPaused = initPosition = lastPosition = translateInit = disX = disY = panStart = rafIndex = getDist = touch = mouseDrag = null;
     // check variables
-    // [animateIn, animateOut, animateDelay, animateNormal, horizontal, outerWrapper, innerWrapper, container, containerParent, containerHTML, slideItems, slideCount, breakpointZone, windowWidth, autoWidth, fixedWidth, edgePadding, gutter, viewport, items, slideBy, viewportMax, arrowKeys, speed, rewind, loop, autoHeight, sheet, lazyload, slidePositions, slideItemsOut, cloneCount, slideCountNew, hasRightDeadZone, rightBoundary, updateIndexBeforeTransform, transformAttr, transformPrefix, transformPostfix, getIndexMax, index, indexCached, indexMin, indexMax, resizeTimer, swipeAngle, moveDirectionExpected, running, onInit, events, newContainerClasses, slideId, disable, disabled, freezable, freeze, frozen, controlsEvents, navEvents, hoverEvents, visibilityEvent, docmentKeydownEvent, touchEvents, dragEvents, hasControls, hasNav, navAsThumbnails, hasAutoplay, hasTouch, hasMouseDrag, slideActiveClass, imgCompleteClass, imgEvents, imgsComplete, controls, controlsText, controlsContainer, controlsContainerHTML, prevButton, nextButton, prevIsButton, nextIsButton, nav, navContainer, navContainerHTML, navItems, pages, pagesCached, navClicked, navCurrentIndex, navCurrentIndexCached, navActiveClass, navStr, navStrCurrent, autoplay, autoplayTimeout, autoplayDirection, autoplayText, autoplayHoverPause, autoplayButton, autoplayButtonHTML, autoplayResetOnVisibility, autoplayHtmlStrings, autoplayTimer, animating, autoplayHoverPaused, autoplayUserPaused, autoplayVisibilityPaused, initPosition, lastPosition, translateInit, disX, disY, panStart, rafIndex, getDist, touch, mouseDrag ].forEach(function(item) { if (item !== null) { console.log(item); } });
+    // [animateIn, animateOut, animateDelay, animateNormal, horizontal, outerWrapper, innerWrapper, container, containerParent, containerHTML, slideItems, slideCount, breakpointZone, windowWidth, autoWidth, fixedWidth, edgePadding, gutter, viewport, items, slideBy, viewportMax, arrowKeys, speed, rewind, loop, autoHeight, sheet, lazyload, slidePositions, slideItemsOut, cloneCount, slideCountNew, hasRightDeadZone, rightBoundary, updateIndexBeforeTransform, transformAttr, transformPrefix, transformPostfix, getIndexMax, index, indexCached, indexMin, indexMax, resizeTimer, swipeAngle, moveDirectionExpected, running, onInit, events, newContainerClasses, slideId, disable, disabled, freezable, freeze, frozen, controlsEvents, navEvents, hoverEvents, visibilityEvent, docmentKeydownEvent, touchEvents, dragEvents, hasControls, hasNav, navAsThumbnails, hasAutoplay, hasTouch, hasMouseDrag, slideActiveClass, imgCompleteClass, imgEvents, imgsComplete, controls, controlsText, navText, controlsContainer, controlsContainerHTML, prevButton, nextButton, prevIsButton, nextIsButton, nav, navContainer, navContainerHTML, navItems, pages, pagesCached, navClicked, navCurrentIndex, navCurrentIndexCached, navActiveClass, navStr, navStrCurrent, autoplay, autoplayTimeout, autoplayDirection, autoplayText, autoplayHoverPause, autoplayButton, autoplayButtonHTML, autoplayResetOnVisibility, autoplayHtmlStrings, autoplayTimer, animating, autoplayHoverPaused, autoplayUserPaused, autoplayVisibilityPaused, initPosition, lastPosition, translateInit, disX, disY, panStart, rafIndex, getDist, touch, mouseDrag ].forEach(function(item) { if (item !== null) { console.log(item); } });
 
     for (var a in this) {
       if (a !== 'rebuild') { this[a] = null; }
@@ -2151,6 +2156,8 @@ var tns = function(options) {
   }
 
   function updateLiveRegion () {
+    if (!options.ariaLive) return;
+
     var str = getLiveRegionStr();
     if (liveregionCurrent.innerHTML !== str) { liveregionCurrent.innerHTML = str; }
   }
@@ -2428,7 +2435,7 @@ var tns = function(options) {
     }, 300);
   }
 
-  // set tabindex on Nav
+  // update tns nav state
   function updateNavStatus () {
     // get current nav
     if (nav) {
@@ -2440,13 +2447,15 @@ var tns = function(options) {
             navCurrent = navItems[navCurrentIndex];
 
         setAttrs(navPrev, {
-          'tabindex': '-1',
           'aria-label': navStr + (navCurrentIndexCached + 1)
         });
+        removeAttrs(navPrev, 'aria-current');
         removeClass(navPrev, navActiveClass);
 
-        setAttrs(navCurrent, {'aria-label': navStr + (navCurrentIndex + 1) + navStrCurrent});
-        removeAttrs(navCurrent, 'tabindex');
+        setAttrs(navCurrent, {
+          'aria-label': navStr + (navCurrentIndex + 1) + navStrCurrent,
+          'aria-current': 'true'
+        });
         addClass(navCurrent, navActiveClass);
 
         navCurrentIndexCached = navCurrentIndex;
@@ -3047,17 +3056,18 @@ var tns = function(options) {
       } catch(err) {}
 
       var x = translateInit,
-          dist = getDist(lastPosition, initPosition);
+          dist = getDist(lastPosition, initPosition),
+          xUnit;
       if (!horizontal || fixedWidth || autoWidth) {
         x += dist;
-        x += 'px';
+        xUnit = x + 'px';
       } else {
         var percentageX = TRANSFORM ? dist * items * 100 / ((viewport + gutter) * slideCountNew): dist * 100 / (viewport + gutter);
         x += percentageX;
-        x += '%';
+        xUnit = x + '%';
       }
 
-      container.style[transformAttr] = transformPrefix + x + transformPostfix;
+      container.style[transformAttr] = transformPrefix + xUnit + transformPostfix;
     }
   }
 
