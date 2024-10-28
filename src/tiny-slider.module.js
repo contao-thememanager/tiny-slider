@@ -251,6 +251,7 @@ export var tns = function(options) {
       middleWrapper,
       container = options.container,
       containerParent = container.parentNode,
+      containerParentClasses,
       containerHTML = container.outerHTML,
       slideItems = container.children,
       slideCount = slideItems.length,
@@ -713,6 +714,7 @@ export var tns = function(options) {
       wp.className += ' tns-ah';
     }
 
+    containerParentClasses = containerParent.classList;
     containerParent.insertBefore(outerWrapper, container);
     innerWrapper.appendChild(container);
 
@@ -1647,7 +1649,9 @@ export var tns = function(options) {
     if (disabled) { return; }
 
     sheet.disabled = true;
-    container.className = container.className.replace(newContainerClasses.substring(1), '');
+    container.className = container.className.replace(newContainerClasses.substring(1), '').trim();
+    containerParentClasses.forEach(cls => {innerWrapper.classList.add(cls)});
+
     removeAttrs(container, ['style']);
     if (loop) {
       for (var j = cloneCount; j--;) {
@@ -1680,6 +1684,7 @@ export var tns = function(options) {
 
     sheet.disabled = false;
     container.className += newContainerClasses;
+    containerParentClasses.forEach(cls => {innerWrapper.classList.remove(cls)});
     doContainerTransformSilent();
 
     if (loop) {
@@ -2749,7 +2754,7 @@ export var tns = function(options) {
   }
 
   return {
-    version: '2.9.4',
+    version: '2.9.4-ctm',
     getInfo: info,
     events: events,
     goTo: goTo,
