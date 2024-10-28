@@ -2613,17 +2613,18 @@ export var tns = function(options) {
       } catch(err) {}
 
       var x = translateInit,
-          dist = getDist(lastPosition, initPosition);
+          dist = getDist(lastPosition, initPosition),
+          xUnit;
       if (!horizontal || fixedWidth || autoWidth) {
         x += dist;
-        x += 'px';
+        xUnit = x + 'px';
       } else {
         var percentageX = TRANSFORM ? dist * items * 100 / ((viewport + gutter) * slideCountNew): dist * 100 / (viewport + gutter);
         x += percentageX;
-        x += '%';
+        xUnit = x + '%';
       }
 
-      container.style[transformAttr] = transformPrefix + x + transformPostfix;
+      container.style[transformAttr] = transformPrefix + xUnit + transformPostfix;
     }
   }
 
