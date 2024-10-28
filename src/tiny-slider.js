@@ -1715,6 +1715,8 @@ export var tns = function(options) {
   }
 
   function updateLiveRegion () {
+    if (!options.ariaLive) return;
+
     var str = getLiveRegionStr();
     if (liveregionCurrent.innerHTML !== str) { liveregionCurrent.innerHTML = str; }
   }
