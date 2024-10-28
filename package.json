@@ -1,6 +1,6 @@
 {
   "name": "tiny-slider",
-  "version": "2.9.4",
+  "version": "2.9.4-ctm",
   "description": "Vanilla javascript slider for all purposes, inspired by Owl Carousel.",
   "main": "dist/tiny-slider.js",
   "types": "src/tiny-slider.d.ts",
@@ -40,13 +40,19 @@
   "homepage": "https://github.com/ganlanyuan/tiny-slider#readme",
   "devDependencies": {
     "@babel/cli": "^7.14.8",
-    "@babel/core": "^7.15.0",
+    "@babel/core": "^7.26.0",
     "@babel/polyfill": "^7.12.1",
-    "@babel/preset-env": "^7.15.0",
+    "@babel/preset-env": "^7.26.0",
     "@rollup/plugin-babel": "^5.3.0",
     "@rollup/plugin-commonjs": "^20.0.0",
+    "@rollup/plugin-terser": "^0.4.3",
+    "gulp-babel": "^8.0.0",
     "nightwatch": "^1.7.11",
     "nodemon": "^2.0.3",
     "rollup": "^2.56.3"
+  },
+  "dependencies": {
+    "gulp": "^3.9.1",
+    "gulp-uglify": "^3.0.2"
   }
 }

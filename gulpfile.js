@@ -3,6 +3,8 @@ const resolve = require('rollup-plugin-node-resolve');
 const babel = require('rollup-plugin-babel');
 
 const gulp = require('gulp');
+const sourcemaps = require('gulp-sourcemaps');
+const uglify = require('gulp-uglify')
 const packages = require('/www/package.json');
 const $ = require('gulp-load-plugins')({
   config: packages
@@ -14,23 +16,23 @@ const fs = require('fs');
 
 let sourcemapsDest = 'sourcemaps';
 let libName = 'tiny-slider',
-    testName = 'tests',
-    modulePostfix = '.module',
-    helperIEPostfix = '.helper.ie8',
-    script = libName + '.js',
-    moduleScript = libName + modulePostfix + '.js',
-    helperIEScript = libName + helperIEPostfix + '.js',
-    testScript = testName + '.js',
-    sassFile = libName + '.scss',
-    pathSrc = 'src/',
-    pathDest = 'dist/',
-    pathTest = 'tests/js/',
-    scriptSources = [pathSrc + '**/*.js', '!' + pathSrc + moduleScript, '!' + pathSrc + helperIEScript];
+  testName = 'tests',
+  modulePostfix = '.module',
+  helperIEPostfix = '.helper.ie8',
+  script = libName + '.js',
+  moduleScript = libName + modulePostfix + '.js',
+  helperIEScript = libName + helperIEPostfix + '.js',
+  testScript = testName + '.js',
+  sassFile = libName + '.scss',
+  pathSrc = 'src/',
+  pathDest = 'dist/',
+  pathTest = 'tests/js/',
+  scriptSources = [pathSrc + '**/*.js', '!' + pathSrc + moduleScript, '!' + pathSrc + helperIEScript];
 
-function errorlog (error) {  
-  console.error.bind(error);  
-  this.emit('end');  
-}  
+function errorlog (error) {
+  console.error.bind(error);
+  this.emit('end');
+}
 
 function readfiles (dir, arr) {
   fs.readdirSync(dir).forEach( file => {
@@ -47,7 +49,7 @@ gulp.task('njk', function() {
 
   files.forEach(function(file) {
     let dest = path.dirname(file).replace('/template', '');
-    
+
     return gulp.src(file)
       .pipe($.plumber())
       .pipe($.nunjucks.compile({}, {
@@ -74,18 +76,18 @@ function sassTask(src, dest) {
   return gulp.src(src)
     .pipe($.sourcemaps.init())
     .pipe($.sass({
-      outputStyle: 'compressed', 
+      outputStyle: 'compressed',
       precision: 7
-    }).on('error', $.sass.logError))  
+    }).on('error', $.sass.logError))
     .pipe($.sourcemaps.write(sourcemapsDest))
     .pipe(gulp.dest(dest))
     .pipe(browserSync.stream());
 }
 
 // SASS Task
-gulp.task('sass', function () {  
+gulp.task('sass', function () {
   sassTask(pathSrc + sassFile, pathDest);
-});  
+});
 
 // Script Task
 gulp.task('script', function () {
@@ -141,9 +143,9 @@ gulp.task('makeDevCopy', function() {
 
 gulp.task('min', ['editPro'], function () {
   return gulp.src(pathDest + '*.js')
-    .pipe($.sourcemaps.init())
-    .pipe($.uglify())
-    .pipe($.sourcemaps.write('../' + sourcemapsDest))
+    //.pipe(sourcemaps.init())
+    .pipe(uglify())
+    //.pipe(sourcemaps.write('../' + sourcemapsDest))
     .pipe(gulp.dest(pathDest + 'min'))
 })
 
@@ -203,5 +205,5 @@ gulp.task('default', [
   // 'min',
   // 'helper-ie8',
   // 'makeDevCopy',
-  'server', 
-]);  
+  'server',
+]);
