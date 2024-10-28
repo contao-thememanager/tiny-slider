@@ -1165,7 +1165,8 @@ var tns = function(options) {
       if (!carousel && animateNormal) { addClass(item, animateNormal); }
       setAttrs(item, {
         'aria-hidden': 'true',
-        'tabindex': '-1'
+        'tabindex': '-1',
+        'inert': 'true',
       });
     });
 
@@ -2379,7 +2380,7 @@ var tns = function(options) {
       // show slides
       if (i >= start && i <= end) {
         if (hasAttr(item, 'aria-hidden')) {
-          removeAttrs(item, ['aria-hidden', 'tabindex']);
+          removeAttrs(item, ['aria-hidden', 'tabindex', 'inert']);
           addClass(item, slideActiveClass);
         }
       // hide slides
@@ -2387,7 +2388,8 @@ var tns = function(options) {
         if (!hasAttr(item, 'aria-hidden')) {
           setAttrs(item, {
             'aria-hidden': 'true',
-            'tabindex': '-1'
+            'tabindex': '-1',
+            'inert': 'true',
           });
           removeClass(item, slideActiveClass);
         }
