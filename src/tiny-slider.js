@@ -1089,7 +1089,7 @@ export var tns = function(options) {
     // == controlsInit ==
     if (hasControls) {
       if (!controlsContainer && (!prevButton || !nextButton)) {
-        outerWrapper.insertAdjacentHTML(getInsertPosition(options.controlsPosition), '<div class="tns-controls" aria-label="Carousel Navigation" tabindex="0"><button type="button" data-controls="prev" tabindex="-1" aria-controls="' + slideId +'">' + controlsText[0] + '</button><button type="button" data-controls="next" tabindex="-1" aria-controls="' + slideId +'">' + controlsText[1] + '</button></div>');
+        outerWrapper.insertAdjacentHTML(getInsertPosition(options.controlsPosition), '<div class="tns-controls" aria-label="Carousel Navigation" tabindex="0"><button type="button" data-controls="prev" aria-controls="' + slideId +'">' + controlsText[0] + '</button><button type="button" data-controls="next" aria-controls="' + slideId +'">' + controlsText[1] + '</button></div>');
 
         controlsContainer = outerWrapper.querySelector('.tns-controls');
       }
@@ -1109,7 +1109,7 @@ export var tns = function(options) {
       if (options.controlsContainer || (options.prevButton && options.nextButton)) {
         setAttrs([prevButton, nextButton], {
           'aria-controls': slideId,
-          'tabindex': '-1',
+          //'tabindex': '-1',
         });
       }
 
