@@ -546,7 +546,7 @@ export var tns = function(options) {
     rect = div.getBoundingClientRect();
     width = rect.right - rect.left;
     div.remove();
-    return width || getClientWidth(el.parentNode);
+    return width || (el.parentNode.parentNode && getClientWidth(el.parentNode)) || null;
   }
 
   function getViewportWidth () {
