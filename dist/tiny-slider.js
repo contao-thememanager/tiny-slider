@@ -1496,7 +1496,7 @@ var tns = function(options) {
             hiddenStr = navAsThumbnails ? '' : 'style="display:none"';
         for (var i = 0; i < slideCount; i++) {
           // hide nav items by default
-          navHtml += '<button type="button" data-nav="' + i +'" aria-controls="' + slideId + '" ' + hiddenStr + ' aria-label="' + navStr + (i + 1) +'"></button>';
+          navHtml += '<button type="button" data-nav="' + i +'" aria-controls="' + slideId + '" ' + hiddenStr + ' aria-label="' + navStr + (i + 1) +'"><span class="tns-dot"></span></button>';
         }
         navHtml = '<div class="tns-nav" aria-label="Carousel Pagination">' + navHtml + '</div>';
         outerWrapper.insertAdjacentHTML(getInsertPosition(options.navPosition), navHtml);
