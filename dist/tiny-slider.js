@@ -2108,10 +2108,14 @@ var tns = function(options) {
     // vertical slider
     if (!horizontal || !carousel) { removeAttrs(innerWrapper, ['style']); }
 
-    // gallery
-    if (!carousel) {
-      for (var i = index, l = index + slideCount; i < l; i++) {
-        var item = slideItems[i];
+
+    for (var i = index, l = index + slideCount; i < l; i++) {
+      var item = slideItems[i];
+
+      removeAttrs(item, ['aria-hidden', 'tabindex', 'inert']);
+
+      // gallery
+      if (!carousel) {
         removeAttrs(item, ['style']);
         removeClass(item, animateIn);
         removeClass(item, animateNormal);
@@ -2151,6 +2155,10 @@ var tns = function(options) {
 
     // update tools
     enableUI();
+
+    // Reinit
+    additionalUpdates();
+
 
     disabled = false;
   }
