@@ -474,7 +474,9 @@ export var tns = function(options) {
     return tem%slideCount + 1;
   }
 
-  function getStartIndex (ind) {
+  function getStartIndex (ind, disabled = false) {
+    if (disabled) { ind = null }
+
     ind = ind ? Math.max(0, Math.min(loop ? slideCount - 1 : slideCount - items, ind)) : 0;
     return carousel ? ind + cloneCount : ind;
   }
@@ -1669,6 +1671,7 @@ export var tns = function(options) {
     // vertical slider
     if (!horizontal || !carousel) { removeAttrs(innerWrapper, ['style']); }
 
+    index = getStartIndex(getOption('startIndex'), true)
 
     for (var i = index, l = index + slideCount; i < l; i++) {
       var item = slideItems[i];
